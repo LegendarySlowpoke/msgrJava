@@ -19,6 +19,7 @@ public class EntityUser {
     @Column(name="phoneNumber", nullable = true)
     private int phoneNumber;
 
+
     //Info
     private String name;
     private String surname;
