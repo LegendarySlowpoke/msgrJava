@@ -7,6 +7,7 @@ import java.util.List;
 @Entity
 @Table(name = "user") // for SQL table
 public class EntityUser {
+    //blablablab
     //Fields
     //Contacts
     @Id
