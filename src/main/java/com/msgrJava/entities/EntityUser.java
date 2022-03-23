@@ -7,10 +7,8 @@ import java.util.List;
 @Entity
 @Table(name = "user") // for SQL table
 public class EntityUser {
-    //blablablab
     //Fields
     //Contacts
-    @Id
     @Column(name = "id", nullable = false)
     private Long id;
     @Id
