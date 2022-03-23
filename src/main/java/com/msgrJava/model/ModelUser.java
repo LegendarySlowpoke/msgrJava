@@ -1,5 +1,5 @@
 package com.msgrJava.model;
 
-public class UserModel {
+public class ModelUser {
 
 }
