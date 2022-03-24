@@ -10,5 +10,6 @@ public interface RepoUser extends CrudRepository<EntityUser, Long> {
     EntityUser getUserEntityById(Long id);
     EntityUser findByPhoneNumber(int phoneNumber);
     EntityUser findByUserTAG(String tag);
+    EntityUser findByEmail(String email);
 
 }

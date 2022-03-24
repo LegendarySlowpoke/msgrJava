@@ -5,7 +5,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "user") // for SQL table
+//@Table(name = "user") // for SQL table
 public class EntityUser {
     //Fields---------------------------
     //Contacts
@@ -14,7 +14,7 @@ public class EntityUser {
     private Long id;
     @Column(name = "tag", nullable = false)
     private String userTAG;
-    @Column(name="phoneNumber", nullable = true)
+    @Column(name="phoneNumber")
     private int phoneNumber;
     //Info
     private String name;

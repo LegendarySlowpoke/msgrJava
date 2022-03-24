@@ -2,6 +2,7 @@ package com.msgrJava.controller;
 
 
 import com.msgrJava.entities.EntityUser;
+import com.msgrJava.exceptions.clientSide.RegistrationDataError;
 import com.msgrJava.exceptions.clientSide.UserAlreadyExistsException;
 import com.msgrJava.exceptions.clientSide.UserNotFoundException;
 import com.msgrJava.service.ServiceUser;
@@ -13,22 +14,25 @@ import org.springframework.web.bind.annotation.*;
 //todo THE CONTROLLER CLASS IS FOR SENDING DATA AND RECEIVING REQUESTS
 
 @RestController
-@RequestMapping("/edit_profile")
+@RequestMapping("/user")
 public class ControllerUser {
 
         @Autowired
         private ServiceUser userService;
 
 
-        @PostMapping("/registration")
+        @PostMapping("registration")
         public ResponseEntity registration(@RequestBody EntityUser newUser) {
                 try {
-                        //todo CONTINUE FROM HERE!
+                        System.out.println("User registration request received: " + newUser.toString());
                         userService.registration(newUser);
+                        System.out.println("Successful registration!");
                         return ResponseEntity.ok("Successful registration!");
-                } catch (UserAlreadyExistsException e) {
+                } catch (RegistrationDataError | UserAlreadyExistsException e) {
+                        System.out.println("Registration error: " + e.getMessage());
                         return ResponseEntity.badRequest().body(e.getMessage());
                 } catch (Exception e) {
+                        System.out.println("Unhandled: " + e.getMessage());
                         return ResponseEntity.badRequest().body("Error has happen: " + e.getMessage());
                 }
         }
@@ -36,21 +40,27 @@ public class ControllerUser {
         @GetMapping("/findbyid")
         public ResponseEntity getOneUser(@RequestParam long id) {
                 try {
+                        System.out.println("Request for User with id " + id + " received");
                         return ResponseEntity.ok(userService.getOne(id));
                 } catch (UserNotFoundException e) {
+                        System.out.println("Error: " + e.getMessage());
                         return ResponseEntity.badRequest().body("User was not found =(");
                 } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
                         return ResponseEntity.badRequest().body("Error has happen: " + e.getMessage());
                 }
         }
 
-        @DeleteMapping("/delete{id}")
-        public ResponseEntity deleteUser(@PathVariable Long id) {
+        @DeleteMapping("/delete")
+        public ResponseEntity deleteUser(@RequestParam Long id) {
                 try {
+                        System.out.println("Request for DELETING User with id " + id + " received");
                         return ResponseEntity.ok(userService.delete(id));
                 } catch (UserNotFoundException e) {
-                        return ResponseEntity.badRequest().body("User to delete was not found =(");
+                        System.out.println("Error: " + e.getMessage());
+                        return ResponseEntity.badRequest().body("User to delete with id " + id + " was not found =(");
                 } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
                         return ResponseEntity.badRequest().body("Error has happen: " + e.getMessage());
                 }
         }

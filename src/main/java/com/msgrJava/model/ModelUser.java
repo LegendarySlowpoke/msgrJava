@@ -4,19 +4,31 @@ import com.msgrJava.entities.EntityUser;
 
 public class ModelUser {
 
+    private Long id;
     private String userTag;
     private String userName;
     private String userSurname;
     private int userPhone;
 
     public static ModelUser toModel(EntityUser userEntity) {
+        System.out.println("    ====ModelUser class: userEntity " + userEntity.toString() + " with userEntity id " +
+                userEntity.getId());
         ModelUser userModel = new ModelUser();
+        userModel.setId(userEntity.getId());
         userModel.setUserTag(userEntity.getUserTAG());
         userModel.setUserName(userEntity.getName());
         userModel.setUserSurname(userEntity.getSurname());
         userModel.setUserPhone(userEntity.getPhoneNumber());
 
         return userModel;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getUserTag() {
