@@ -11,12 +11,14 @@ public class EntityUser {
     //Contacts
     @Id
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "tag", nullable = false)
     private String userTAG;
     @Column(name="phoneNumber")
-    private int phoneNumber;
+    private String phoneNumber;
     //Info
+    @Column(name = "name", nullable = false)
     private String name;
     private String surname;
     private String email;
@@ -26,7 +28,15 @@ public class EntityUser {
     private List<Long> usersFriends;
     //----------------------------------
 
-    public EntityUser() {}
+    //Constructor
+    public EntityUser() {
+    }
+
+    //GetInfoPreInit
+    public String getInfoPreInit() {
+        return "id " + id + ", userTAG " + userTAG + ", phonenumber " + phoneNumber + ", name " + name + ", surname " +
+                surname + ", email " + email + ", passHash " + passHash;
+    }
 
     public Long getId() {
         return id;
@@ -44,11 +54,11 @@ public class EntityUser {
         this.userTAG = userTAG;
     }
 
-    public int getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(int phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

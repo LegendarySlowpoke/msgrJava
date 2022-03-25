@@ -1,6 +1,7 @@
 package com.msgrJava.controller;
 
 
+import com.msgrJava.crypt.PassHasher;
 import com.msgrJava.entities.EntityUser;
 import com.msgrJava.exceptions.clientSide.RegistrationDataError;
 import com.msgrJava.exceptions.clientSide.UserAlreadyExistsException;
@@ -24,7 +25,10 @@ public class ControllerUser {
         @PostMapping("registration")
         public ResponseEntity registration(@RequestBody EntityUser newUser) {
                 try {
-                        System.out.println("User registration request received: " + newUser.toString());
+                        //todo should find better place for encrypting
+                        newUser.setPassHash(PassHasher.encryptThisString(newUser.getPassHash()));
+                        System.out.println("User registration request received: " + newUser.toString() +
+                                "\n\t\t" + newUser.getInfoPreInit());
                         userService.registration(newUser);
                         System.out.println("Successful registration!");
                         return ResponseEntity.ok("Successful registration!");

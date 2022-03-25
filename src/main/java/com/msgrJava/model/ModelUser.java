@@ -8,7 +8,7 @@ public class ModelUser {
     private String userTag;
     private String userName;
     private String userSurname;
-    private int userPhone;
+    private String userPhone;
 
     public static ModelUser toModel(EntityUser userEntity) {
         System.out.println("    ====ModelUser class: userEntity " + userEntity.toString() + " with userEntity id " +
@@ -55,11 +55,11 @@ public class ModelUser {
         this.userSurname = userSurname;
     }
 
-    public int getUserPhone() {
+    public String getUserPhone() {
         return userPhone;
     }
 
-    public void setUserPhone(int userPhone) {
+    public void setUserPhone(String userPhone) {
         this.userPhone = userPhone;
     }
 }

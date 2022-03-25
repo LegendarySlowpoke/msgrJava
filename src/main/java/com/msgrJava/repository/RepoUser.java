@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface RepoUser extends CrudRepository<EntityUser, Long> {
 
     EntityUser getUserEntityById(Long id);
-    EntityUser findByPhoneNumber(int phoneNumber);
+    EntityUser findByPhoneNumber(String phoneNumber);
     EntityUser findByUserTAG(String tag);
     EntityUser findByEmail(String email);
 
