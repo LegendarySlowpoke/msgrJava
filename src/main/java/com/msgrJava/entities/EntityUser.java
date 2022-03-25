@@ -8,7 +8,7 @@ import java.util.List;
 //@Table(name = "user") // for SQL table
 public class EntityUser {
     //Fields---------------------------
-    //Contacts
+    //ContactInfo
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +24,10 @@ public class EntityUser {
     private String email;
     //SecuredInfo
     private String passHash;
-    @ElementCollection
-    private List<Long> usersFriends;
+    //todo
+    @OneToMany
+    private List<Long> userChats;
+
     //----------------------------------
 
     //Constructor
@@ -94,11 +96,11 @@ public class EntityUser {
         this.passHash = passHash;
     }
 
-    public List<Long> getUsersFriends() {
-        return usersFriends;
+    public List<Long> getUserChats() {
+        return userChats;
     }
 
-    public void setUsersFriends(List<Long> userContacts) {
-        this.usersFriends = userContacts;
+    public void setUserChats(List<Long> userChats) {
+        this.userChats = userChats;
     }
 }

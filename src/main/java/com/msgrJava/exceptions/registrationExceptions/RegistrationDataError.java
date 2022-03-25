@@ -1,4 +1,4 @@
-package com.msgrJava.exceptions.clientSide;
+package com.msgrJava.exceptions.registrationExceptions;
 
 public class RegistrationDataError extends Throwable {
     public RegistrationDataError(String message) {

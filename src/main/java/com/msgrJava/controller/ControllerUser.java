@@ -3,9 +3,9 @@ package com.msgrJava.controller;
 
 import com.msgrJava.crypt.PassHasher;
 import com.msgrJava.entities.EntityUser;
-import com.msgrJava.exceptions.clientSide.RegistrationDataError;
-import com.msgrJava.exceptions.clientSide.UserAlreadyExistsException;
-import com.msgrJava.exceptions.clientSide.UserNotFoundException;
+import com.msgrJava.exceptions.registrationExceptions.RegistrationDataError;
+import com.msgrJava.exceptions.registrationExceptions.UserAlreadyExistsException;
+import com.msgrJava.exceptions.registrationExceptions.UserNotFoundException;
 import com.msgrJava.service.ServiceUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

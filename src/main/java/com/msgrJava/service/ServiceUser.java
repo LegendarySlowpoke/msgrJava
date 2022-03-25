@@ -1,9 +1,9 @@
 package com.msgrJava.service;
 
 import com.msgrJava.entities.EntityUser;
-import com.msgrJava.exceptions.clientSide.RegistrationDataError;
-import com.msgrJava.exceptions.clientSide.UserNotFoundException;
-import com.msgrJava.exceptions.clientSide.UserAlreadyExistsException;
+import com.msgrJava.exceptions.registrationExceptions.RegistrationDataError;
+import com.msgrJava.exceptions.registrationExceptions.UserNotFoundException;
+import com.msgrJava.exceptions.registrationExceptions.UserAlreadyExistsException;
 import com.msgrJava.model.ModelUser;
 import com.msgrJava.repository.RepoUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class ServiceUser {
         }
         //Phone number
         //removing spaces in phoneNumber
-        //user.setPhoneNumber(user.getPhoneNumber().replace(" ", ""));
+        user.setPhoneNumber(user.getPhoneNumber().replace(" ", ""));
         String phoneChecker = user.getPhoneNumber();
         if (phoneChecker != null) {
             if (!phoneChecker.matches("[0-9]+") || phoneChecker.length() < 6 || phoneChecker.length() > 15) {
