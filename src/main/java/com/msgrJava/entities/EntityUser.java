@@ -15,7 +15,6 @@ public class EntityUser {
     private Long id;
     @Column(name = "tag", nullable = false)
     private String userTAG;
-    @Column(name="phoneNumber")
     private String phoneNumber;
     //Info
     @Column(name = "name", nullable = false)

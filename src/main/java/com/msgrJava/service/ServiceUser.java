@@ -69,13 +69,46 @@ public class ServiceUser {
     }
 
 
-    public ModelUser getOne(Long id) throws UserNotFoundException {
+    public ModelUser getById(Long id) throws UserNotFoundException {
         EntityUser user = userRepo.getUserEntityById(id);
         if (user != null) {
             System.out.println("ServiceUser: id=" + user.getId());
             return ModelUser.toModel(user);
         } else {
             System.out.println("ServiceUser: id=" + id + " not found");
+            throw new UserNotFoundException("User not found =(");
+        }
+    }
+
+    public ModelUser getByPhone(String phone) throws UserNotFoundException {
+        EntityUser user = userRepo.findByPhoneNumber(phone);
+        if (user != null) {
+            System.out.println("ServiceUser: id=" + user.getId());
+            return ModelUser.toModel(user);
+        } else {
+            System.out.println("ServiceUser: phone=" + phone + " not found");
+            throw new UserNotFoundException("User not found =(");
+        }
+    }
+
+    public ModelUser getByUserTAG(String userTAG) throws UserNotFoundException {
+        EntityUser user = userRepo.findByUserTAG(userTAG);
+        if (user != null) {
+            System.out.println("ServiceUser: id=" + user.getUserTAG());
+            return ModelUser.toModel(user);
+        } else {
+            System.out.println("ServiceUser: userTAG=" + userTAG + " not found");
+            throw new UserNotFoundException("User not found =(");
+        }
+    }
+
+    public ModelUser getByEmail(String email) throws UserNotFoundException {
+        EntityUser user = userRepo.findByPhoneNumber(email);
+        if (user != null) {
+            System.out.println("ServiceUser: id=" + user.getId());
+            return ModelUser.toModel(user);
+        } else {
+            System.out.println("ServiceUser: email=" + email + " not found");
             throw new UserNotFoundException("User not found =(");
         }
     }

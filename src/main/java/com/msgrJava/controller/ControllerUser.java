@@ -42,10 +42,52 @@ public class ControllerUser {
         }
 
         @GetMapping("/findbyid")
-        public ResponseEntity getOneUser(@RequestParam long id) {
+        public ResponseEntity getById(@RequestParam long id) {
                 try {
                         System.out.println("Request for User with id " + id + " received");
-                        return ResponseEntity.ok(userService.getOne(id));
+                        return ResponseEntity.ok(userService.getById(id));
+                } catch (UserNotFoundException e) {
+                        System.out.println("Error: " + e.getMessage());
+                        return ResponseEntity.badRequest().body("User was not found =(");
+                } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                        return ResponseEntity.badRequest().body("Error has happen: " + e.getMessage());
+                }
+        }
+
+        @GetMapping("/findbyphonenumber")
+        public ResponseEntity getByPhoneNumber(@RequestParam String phone) {
+                try {
+                        System.out.println("Request for User with phone " + phone + " received");
+                        return ResponseEntity.ok(userService.getByPhone(phone));
+                } catch (UserNotFoundException e) {
+                        System.out.println("Error: " + e.getMessage());
+                        return ResponseEntity.badRequest().body("User was not found =(");
+                } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                        return ResponseEntity.badRequest().body("Error has happen: " + e.getMessage());
+                }
+        }
+
+        @GetMapping("/findByUserTAG")
+        public ResponseEntity findByUserTAG(@RequestParam String userTag) {
+                try {
+                        System.out.println("Request for User with userTag " + userTag + " received");
+                        return ResponseEntity.ok(userService.getByUserTAG(userTag));
+                } catch (UserNotFoundException e) {
+                        System.out.println("Error: " + e.getMessage());
+                        return ResponseEntity.badRequest().body("User was not found =(");
+                } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                        return ResponseEntity.badRequest().body("Error has happen: " + e.getMessage());
+                }
+        }
+
+        @GetMapping("/findByEmail")
+        public ResponseEntity findByEmail(@RequestParam String email) {
+                try {
+                        System.out.println("Request for User with email " + email + " received");
+                        return ResponseEntity.ok(userService.getByEmail(email));
                 } catch (UserNotFoundException e) {
                         System.out.println("Error: " + e.getMessage());
                         return ResponseEntity.badRequest().body("User was not found =(");

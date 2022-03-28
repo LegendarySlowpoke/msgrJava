@@ -16,7 +16,7 @@ public class EntityMessage {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
         @OneToMany
-        @JoinColumn(name = "sender_id")
+        @JoinColumn(name = "sender_id", nullable = false)
         private List<EntityUser> sender;
         private String message;
         private Time created;
