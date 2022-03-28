@@ -5,7 +5,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-//@Table(name = "user") // for SQL table
+@Table(name = "user") // for SQL table
 public class EntityUser {
     //Fields---------------------------
     //ContactInfo
@@ -25,8 +25,8 @@ public class EntityUser {
     //SecuredInfo
     private String passHash;
     //todo
-    @OneToMany
-    private List<Long> userChats;
+    @ManyToMany(cascade = CascadeType.PERSIST, mappedBy = "user")
+    private List<EntityChat> userChats;
 
     //----------------------------------
 
@@ -96,11 +96,11 @@ public class EntityUser {
         this.passHash = passHash;
     }
 
-    public List<Long> getUserChats() {
+    public List<EntityChat> getUserChats() {
         return userChats;
     }
 
-    public void setUserChats(List<Long> userChats) {
+    public void setUserChats(List<EntityChat> userChats) {
         this.userChats = userChats;
     }
 }
