@@ -4,6 +4,7 @@ package com.msgrJava.entities;
 import javax.persistence.*;
 import java.util.List;
 
+
 @Entity
 @Table(name = "user") // for SQL table
 public class EntityUser {
