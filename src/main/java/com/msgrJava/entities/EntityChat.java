@@ -16,8 +16,6 @@ public class EntityChat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //todo implement this for several users in one chat
-    //
     @ManyToMany
     @JoinColumn(name = "user_id")
     private List<EntityUser> user;
