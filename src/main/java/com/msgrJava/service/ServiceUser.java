@@ -1,9 +1,9 @@
 package com.msgrJava.service;
 
 import com.msgrJava.entities.EntityUser;
-import com.msgrJava.exceptions.registrationExceptions.RegistrationDataError;
-import com.msgrJava.exceptions.registrationExceptions.UserNotFoundException;
-import com.msgrJava.exceptions.registrationExceptions.UserAlreadyExistsException;
+import com.msgrJava.exceptions.userExceptions.RegistrationDataError;
+import com.msgrJava.exceptions.userExceptions.UserNotFoundException;
+import com.msgrJava.exceptions.userExceptions.UserAlreadyExistsException;
 import com.msgrJava.model.ModelUser;
 import com.msgrJava.repository.RepoUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +113,6 @@ public class ServiceUser {
         }
     }
 
-    //todo Should be improved or changed: deleting with not id only should be implemented
     public String delete(Long id) throws UserNotFoundException {
         try {
             userRepo.deleteById(id);

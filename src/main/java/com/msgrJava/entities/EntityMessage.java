@@ -6,23 +6,27 @@ import com.msgrJava.exceptions.chatException.MessageError;
 import javax.persistence.*;
 import java.sql.Time;
 import java.time.LocalTime;
-import java.util.LinkedList;
-import java.util.List;
 
 @Entity
-@Table(name="chat")
+@Table(name="message")
 public class EntityMessage {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
-        @OneToMany
-        @JoinColumn(name = "sender_id", nullable = false)
-        private List<EntityUser> sender;
+        @OneToOne
+        @JoinColumn(name = "sender_id")
+        private EntityUser sender;
+        @JoinColumn(name = "message_content")
         private String message;
+        @JoinColumn(name = "time_created")
         private Time created;
+        @JoinColumn(name = "is_modified")
         private boolean modified;
+        @JoinColumn(name = "time_modified")
         private Time timeModified;
+        @JoinColumn(name = "is_deleted")
         private boolean deleted;
+        @JoinColumn(name = "time_deleted")
         private Time timeDeleted;
 
         //todo Should be implemented or ommited
@@ -30,17 +34,17 @@ public class EntityMessage {
         //private Map<EntityUser, Boolean> messageIsRead;
 
     public EntityMessage() {
+
     }
 
-    public List<EntityUser> getSender() {
+    public EntityUser getSender() {
         return sender;
     }
 
     EntityMessage (EntityUser sender, String message) throws MessageError {
             try {
                 this.message = message;
-                if (sender == null) this.sender = new LinkedList<EntityUser>();
-                this.sender.add(sender);
+                this.sender = sender;
                 created = Time.valueOf(LocalTime.now());
             } catch (Exception e) {
                 throw new MessageError("Failed to create new message(Message class): " + e.getMessage());

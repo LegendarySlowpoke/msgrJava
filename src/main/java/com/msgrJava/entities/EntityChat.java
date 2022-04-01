@@ -6,6 +6,7 @@ import com.msgrJava.exceptions.chatException.ChatError;
 import com.msgrJava.exceptions.chatException.MessageError;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,35 +14,72 @@ import java.util.List;
 @Table(name = "chat")
 public class EntityChat {
 
+    //Chat id number
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    //Chat name
+    @JoinColumn(name = "chatName")
+    private String chatName;
+
+    //Creators id number
+    @OneToOne
+    @JoinColumn(name= "creatorEntity")
+    private EntityUser creatorEntity;
+    //List of all users in chat
     @ManyToMany
-    @JoinColumn(name = "user_id")
-    private List<EntityUser> user;
+    @JoinColumn(name = "userList")
+    private List<EntityUser> usersList = new ArrayList<>();
+
+    //List of all messages in chat
     @OneToMany
     @JoinColumn(name="messages", nullable = false)
     private List<EntityMessage> messages;
 
-    @ManyToOne
-    @JoinColumn(name = "entity_user_id")
-    private EntityUser entityUser;
+    //Grants administrative functions to all Users in chat
+    @JoinColumn(name="democracy")
+    boolean democracy;
 
-    public EntityUser getEntityUser() {
-        return entityUser;
-    }
 
-    public void setEntityUser(EntityUser entityUser) {
-        this.entityUser = entityUser;
-    }
-
-    //todo create a one WILD map where users who've read messages are noted
-    //private Map<Long, List<EntityUser>> unreadMessages;
-
-    //Constructor
+    //====================================================================================
+    //====================================================================================
+    //Constructors
     public EntityChat() {}
 
-    //Methods
+    public EntityChat(EntityUser creatorUser, EntityUser invitedUser, String chatName, String message) throws ChatError {
+        if (chatName == null || chatName.equals("noChatNaMe")) chatName = "Chat";
+
+        this.creatorEntity = creatorUser;
+        usersList.add(invitedUser);
+        this.chatName = chatName;
+
+        if (message == null || message.equals("firstMessageIsEmPtY")) {
+            message = "User " + creatorUser.getUserTAG() + " invited you to chat!";
+        }
+        createNewMessage(creatorUser, message);
+    }
+
+
+
+    //====================================================================================
+    //====================================================================================
+    //Methods for working with this chat
+    public ResponseMessage changeChatName(String chatName) throws ChatError {
+        try {
+            this.chatName = chatName;
+            return ResponseMessage.MODIFIED;
+        } catch (Exception e) {
+            throw new ChatError("Failes to change chat name: " + e.getMessage());
+        }
+    }
+    //todo Create methods for modifying users in chat, userCreator, democracy ETC
+
+
+
+
+    //====================================================================================
+    //====================================================================================
+    //Methods for working with messages in this chat
     public ResponseMessage createNewMessage(EntityUser user, String message) throws ChatError {
         try {
             new EntityMessage(user, message);
@@ -81,5 +119,53 @@ public class EntityChat {
         } catch (Exception e) {
             throw new ChatError("Failed to modify new message(EntityChat class): Exception" + e.getMessage());
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getChatName() {
+        return chatName;
+    }
+
+    public void setChatName(String chatName) {
+        this.chatName = chatName;
+    }
+
+    public EntityUser getCreatorEntity() {
+        return creatorEntity;
+    }
+
+    public void setCreatorEntity(EntityUser creatorEntity) {
+        this.creatorEntity = creatorEntity;
+    }
+
+    public List<EntityUser> getUsersList() {
+        return usersList;
+    }
+
+    public void setUsersList(List<EntityUser> usersList) {
+        this.usersList = usersList;
+    }
+
+    public List<EntityMessage> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<EntityMessage> messages) {
+        this.messages = messages;
+    }
+
+    public boolean isDemocracy() {
+        return democracy;
+    }
+
+    public void setDemocracy(boolean democracy) {
+        this.democracy = democracy;
     }
 }

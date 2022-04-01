@@ -3,16 +3,16 @@ package com.msgrJava.controller;
 
 import com.msgrJava.crypt.PassHasher;
 import com.msgrJava.entities.EntityUser;
-import com.msgrJava.exceptions.registrationExceptions.RegistrationDataError;
-import com.msgrJava.exceptions.registrationExceptions.UserAlreadyExistsException;
-import com.msgrJava.exceptions.registrationExceptions.UserNotFoundException;
+import com.msgrJava.exceptions.userExceptions.RegistrationDataError;
+import com.msgrJava.exceptions.userExceptions.UserAlreadyExistsException;
+import com.msgrJava.exceptions.userExceptions.UserNotFoundException;
 import com.msgrJava.service.ServiceUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-//todo THE CONTROLLER CLASS IS FOR SENDING DATA AND RECEIVING REQUESTS
+// THE CONTROLLER CLASS IS FOR SENDING DATA AND RECEIVING REQUESTS
 
 @RestController
 @RequestMapping("/user")
@@ -97,6 +97,7 @@ public class ControllerUser {
                 }
         }
 
+        //todo remote deleting option should be enabled only for OWNER of this id.
         @DeleteMapping("/delete")
         public ResponseEntity deleteUser(@RequestParam Long id) {
                 try {

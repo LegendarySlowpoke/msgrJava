@@ -1,4 +1,4 @@
-package com.msgrJava.exceptions.registrationExceptions;
+package com.msgrJava.exceptions.userExceptions;
 
 public class UserAlreadyExistsException extends Throwable {
 
