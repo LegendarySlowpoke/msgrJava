@@ -23,7 +23,7 @@ public class EntityUser {
     private String email;
     //SecuredInfo
     private String passHash;
-    //todo this part should be implemenet with ManyToMany annotation
+    //todo this part should be implemented with ManyToMany annotation
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "usersList")
     @Column(name="userChats", nullable = true)
     private List<EntityChat> userChats;
