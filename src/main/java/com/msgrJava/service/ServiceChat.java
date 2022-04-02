@@ -185,7 +185,7 @@ public class ServiceChat {
             } catch (Exception e) {
                 System.out.println("Unknown error: " + e.getMessage());
                 //e.printStackTrace();
-                throw new ChatError("Unknown error:" + e.getMessage());
+                throw new ChatError("Unknown error:");// + e.getMessage());
             }
     }
 }

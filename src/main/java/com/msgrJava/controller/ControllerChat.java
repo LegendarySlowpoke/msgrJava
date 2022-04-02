@@ -4,6 +4,7 @@ import com.msgrJava.exceptions.chatException.ChatError;
 import com.msgrJava.exceptions.chatException.MessageError;
 import com.msgrJava.exceptions.userExceptions.UserNotFoundException;
 import com.msgrJava.service.ServiceChat;
+import com.msgrJava.service.ServiceMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +12,27 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/chat")
 public class ControllerChat {
+
     @Autowired
     private ServiceChat chatService;
+    private ServiceMessage messageService;
+
+
+    //TODO REMOVE THIS METHOD. TESTING PURPOSE ONLY
+    @PostMapping("/testMessage")
+    public ResponseEntity testMessage() {
+        System.out.println("TEST MESSAGE request received. Trying to create message in chat #3" +
+                " from user #5. Message content is \"TEST MeSsAgE O_O o_o -_-\"");
+        try {
+            messageService.createNewMessage(5L, 3L, "TEST MeSsAgE O_O o_o -_-");
+            return ResponseEntity.ok("Created, check the db.");
+        } catch (MessageError e) {
+            System.out.println("Unable");
+            return ResponseEntity.badRequest().body("Unable");
+        }
+    }
+
+
 
     //Methods for working with chat entity
     @PostMapping("/create")
