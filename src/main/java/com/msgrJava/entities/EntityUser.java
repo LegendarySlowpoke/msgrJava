@@ -24,7 +24,7 @@ public class EntityUser {
     //SecuredInfo
     private String passHash;
     //todo this part should be implemenet with ManyToMany annotation
-    @ManyToMany(cascade = CascadeType.PERSIST, mappedBy = "usersList")
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "usersList")
     @Column(name="userChats", nullable = true)
     private List<EntityChat> userChats;
 

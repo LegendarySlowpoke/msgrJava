@@ -1,6 +1,8 @@
 package com.msgrJava.controller;
 
 import com.msgrJava.exceptions.chatException.ChatError;
+import com.msgrJava.exceptions.chatException.MessageError;
+import com.msgrJava.exceptions.userExceptions.UserNotFoundException;
 import com.msgrJava.service.ServiceChat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,12 +11,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/chat")
 public class ControllerChat {
-    //todo Maybe we should not need ServiceUser here...
-    //@Autowired
-    //private ServiceUser userService;
     @Autowired
     private ServiceChat chatService;
 
+    //Methods for working with chat entity
     @PostMapping("/create")
     public ResponseEntity createChat(@RequestParam long creatorId, long invitedId, String chatName, String message) {
         try {
@@ -58,15 +58,67 @@ public class ControllerChat {
         }
     }
 
+    @PostMapping("addUser")
+    public ResponseEntity addUser(@RequestParam long chatId, long senderId, long invitedId) {
+        try {
+            System.out.println("Request for adding user " + invitedId + " to chat with id "
+                    + chatId + " from user" + " with id " + senderId + " received");
+            return ResponseEntity.ok(chatService.addUser(chatId, senderId, invitedId));
+        } catch (ChatError | UserNotFoundException e) {
+            return ResponseEntity.badRequest().body("Unable to add user: " + e.getMessage());
+        }
+    }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity deleteChat(@RequestParam long chatId, long sendersId) {
+    @PostMapping("/removeUser")
+    public ResponseEntity removeUser(@RequestParam Long chatId, Long senderId, Long userToDeleteId) {
+        try {
+            System.out.println("Request for deleting user " + userToDeleteId + " from chat with id "
+                    + chatId + " from user" + " with id " + senderId + " received");
+            return ResponseEntity.ok(chatService.removeUser(chatId, senderId,userToDeleteId));
+        } catch (ChatError | UserNotFoundException e) {
+            return ResponseEntity.badRequest().body("Unable to delete user: " + e.getMessage());
+        }
+    }
+
+
+    @DeleteMapping("/deleteChat")
+    public ResponseEntity deleteChat(@RequestParam Long chatId, Long sendersId) {
         try {
             System.out.println("Request for DELETING chat with id " + chatId + " from user" +
                     " with id " + sendersId + " received");
-            return ResponseEntity.ok(chatService.delete(chatId, sendersId));
+            return ResponseEntity.ok(chatService.deleteChat(chatId, sendersId));
         } catch (ChatError e) {
             return ResponseEntity.badRequest().body("Unable to delete: " + e.getMessage());
         }
     }
+
+
+
+
+    //===============================================================================================
+    //===============================================================================================
+    //Methods for working with message entities in chat entity
+    @PostMapping("/newMessage")
+    public ResponseEntity addNewMessage(@RequestParam long chatId, long senderId, String message) {
+        try {
+            System.out.println("Post new message request received: senderId " + senderId +
+                    ", chatId " + chatId + ", message null:" + (message == null));
+            //todo continue from here!
+            chatService.createNewMessage(chatId, senderId, message);
+            return ResponseEntity.ok("Message posted!");
+        } catch (MessageError e){
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (ChatError e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (UserNotFoundException e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

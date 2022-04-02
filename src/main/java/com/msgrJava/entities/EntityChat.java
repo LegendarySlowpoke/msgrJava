@@ -72,18 +72,32 @@ public class EntityChat {
             throw new ChatError("Failes to change chat name: " + e.getMessage());
         }
     }
-    //todo Create methods for modifying users in chat, userCreator, democracy ETC
 
+    public ResponseMessage addUserToChat(EntityUser visitedUser) throws ChatError {
+        try {
+            this.usersList.add(visitedUser);
+            return ResponseMessage.MODIFIED;
+        } catch (Exception e) {
+            throw new ChatError("Unable to add user with id " + visitedUser.getId());
+        }
+    }
 
+    public ResponseMessage removeUserFromChat(EntityUser userToRemove) throws ChatError {
+        try {
+            this.usersList.remove(userToRemove);
+            return ResponseMessage.MODIFIED;
+        } catch (Exception e) {
+            throw new ChatError("Unable to remove user with id " + userToRemove.getId());
+        }
+    }
 
 
     //====================================================================================
     //====================================================================================
     //Methods for working with messages in this chat
-    public ResponseMessage createNewMessage(EntityUser user, String message) throws ChatError {
+    public EntityMessage createNewMessage(EntityUser user, String message) throws ChatError {
         try {
-            new EntityMessage(user, message);
-            return ResponseMessage.CREATED;
+            return new EntityMessage(user, this, message);
         } catch (MessageError e ){
             throw new ChatError("Failed to create new message(EntityChat class): MessageError " + e.getMessage());
         } catch (Exception e) {
@@ -121,6 +135,8 @@ public class EntityChat {
         }
     }
 
+
+    //SETTERS AND GETTERS
     public Long getId() {
         return id;
     }
