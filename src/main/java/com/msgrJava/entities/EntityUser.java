@@ -13,13 +13,15 @@ public class EntityUser {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "tag", nullable = false)
+    @Column(name = "tag", nullable = false, unique = true)
     private String userTAG;
+    @Column(unique = true)
     private String phoneNumber;
     //Info
     @Column(name = "name", nullable = false)
     private String name;
     private String surname;
+    @Column(unique = true)
     private String email;
     //SecuredInfo
     private String passHash;
