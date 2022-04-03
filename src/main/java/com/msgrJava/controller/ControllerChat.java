@@ -19,6 +19,7 @@ public class ControllerChat {
 
 
     //TODO REMOVE THIS METHOD. TESTING PURPOSE ONLY
+    /*
     @PostMapping("/testMessage")
     public ResponseEntity testMessage() {
         System.out.println("TEST MESSAGE request received. Trying to create message in chat #3" +
@@ -31,6 +32,7 @@ public class ControllerChat {
             return ResponseEntity.badRequest().body("Unable");
         }
     }
+     */
 
 
 

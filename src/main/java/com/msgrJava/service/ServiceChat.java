@@ -162,30 +162,30 @@ public class ServiceChat {
     public String createNewMessage(long chatId, long senderId, String message) throws ChatError, MessageError,
             UserNotFoundException {
 
-            EntityChat chatEntity = chatRepo.getEntityChatById(chatId);
-            EntityUser senderEntity = userRepo.getUserEntityById(senderId);
-            if (chatEntity == null) throw new ChatError("Chat with id " + chatId + " wasn't found.");
-            if (senderEntity == null) throw new ChatError("User with id " + senderId + " wasn't found.");
-            if (message == null) throw new MessageError("Received message is null");
+        EntityChat chatEntity = chatRepo.getEntityChatById(chatId);
+        EntityUser senderEntity = userRepo.getUserEntityById(senderId);
+        if (chatEntity == null) throw new ChatError("Chat with id " + chatId + " wasn't found.");
+        if (senderEntity == null) throw new ChatError("User with id " + senderId + " wasn't found.");
+        if (message == null) throw new MessageError("Received message is null");
 
-            //Create and save messageEntity to repository
-            try {
-                /*
-                EntityMessage createdMessage = chatEntity.createNewMessage(senderEntity, message);
-                System.out.println(createdMessage.getMessageFullInfo());
-                messageRepo.save(createdMessage);
-                 */
-                messageRepo.save(chatEntity.createNewMessage(senderEntity, message));
-                System.out.println("Saved to message repo");
+        if (!(chatEntity.getUsersList().contains(senderEntity) || chatEntity.getCreatorEntity().equals(senderEntity))) {
+            throw new MessageError("You are not member of this chat and you cannot post messages here.");
+        }
 
-                //Saving change made in chatEntity
-                chatRepo.save(chatEntity);
-                System.out.println("Saved to chat repo");
-                return "Message was posted!";
-            } catch (Exception e) {
-                System.out.println("Unknown error: " + e.getMessage());
-                //e.printStackTrace();
-                throw new ChatError("Unknown error:");// + e.getMessage());
-            }
+        //Create and save messageEntity to repository
+        try {
+
+            messageRepo.save(chatEntity.createNewMessage(senderEntity, message));
+            System.out.println("Saved to message repo");
+
+            //Saving change made in chatEntity
+            chatRepo.save(chatEntity);
+            System.out.println("Saved to chat repo");
+            return "Message was posted!";
+        } catch (Exception e) {
+            System.out.println("Unknown error: " + e.getMessage());
+            //e.printStackTrace();
+            throw new ChatError("Unknown error:");// + e.getMessage());
+        }
     }
 }

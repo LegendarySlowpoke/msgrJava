@@ -20,6 +20,7 @@ public class ServiceMessage {
     @Autowired
     private RepoChat chatRepo;
 
+    /*
     public EntityMessage createNewMessage(Long idCreator, Long idChat, String message) throws MessageError {
         //Checking incoming data
         if (idCreator == null || idCreator == 0) throw new MessageError("idCreator is null/0");
@@ -31,7 +32,10 @@ public class ServiceMessage {
         EntityChat chatEntity = chatRepo.getEntityChatById(idChat);
         if (creatorEntity == null) throw new MessageError("Couldn't find entity with user id "  + idCreator);
         if (chatEntity == null) throw new MessageError("Couldn't find entity with chat id "  + idChat);
-
+        if (!chatEntity.getUsersList().contains(creatorEntity) || chatEntity.getCreatorEntity() == creatorEntity) {
+            throw new MessageError("You are not member of this chat and you cannot post messageds here."  + idChat);
+        }
         return messageRepo.save(new EntityMessage(creatorEntity, chatEntity, message));
     }
+     */
 }

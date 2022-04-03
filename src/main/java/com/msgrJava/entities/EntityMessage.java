@@ -17,6 +17,9 @@ public class EntityMessage {
     @OneToOne
     @JoinColumn(name = "sender_id")
     private EntityUser sender;
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private EntityChat chat;
     @JoinColumn(name = "message_content")
     private String message;
     @JoinColumn(name = "time_created")
@@ -40,11 +43,13 @@ public class EntityMessage {
     //todo check if constructor is done properly
     public EntityMessage(EntityUser sender, EntityChat chatEntity, String message) throws MessageError {
         try {
-            this.message = message;
             this.sender = sender;
+            this.chat = chatEntity;
+            this.message = message;
             created = Time.valueOf(LocalTime.now());
         } catch (Exception e) {
-            throw new MessageError("Failed to create new message(Message class): " + e.getMessage());
+            throw new MessageError("Failed to create new message(Message class - constructor): "
+                    + e.getMessage());
         }
     }
 
@@ -55,19 +60,13 @@ public class EntityMessage {
                 ", isDeleted:" + deleted + ", timeDeleted:" + timeDeleted+
                 "\n********************";
     }
-/*
-    private Long id;
-    private EntityUser sender;
-    private String message;
-    private Time created;
-    private boolean modified;
-    private Time timeModified;
-    private boolean deleted;
-    private Time timeDeleted;
- */
 
     public EntityUser getSender() {
         return sender;
+    }
+
+    public EntityChat getChat() {
+        return chat;
     }
 
     //todo create get method for message with implementation of messageIsRead function;

@@ -6,23 +6,26 @@ import com.msgrJava.exceptions.chatException.ChatError;
 import com.msgrJava.exceptions.chatException.MessageError;
 
 import javax.persistence.*;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @Entity
 @Table(name = "chat")
-public class EntityChat {
+public class  EntityChat {
 
-    //Chat id number
+    //Chat info
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     //Chat name
     @JoinColumn(name = "chatName")
     private String chatName;
+    private Time timeCreated;
 
-    //Creators id number
+    //Creators info
     @OneToOne
     @JoinColumn(name= "creatorEntity")
     private EntityUser creatorEntity;
@@ -32,8 +35,7 @@ public class EntityChat {
     private List<EntityUser> usersList = new ArrayList<>();
 
     //List of all messages in chat
-    @OneToMany
-    @JoinColumn(name="messages", nullable = false)
+    @OneToMany (mappedBy="chat")
     private List<EntityMessage> messages;
 
     //Grants administrative functions to all Users in chat
@@ -48,7 +50,7 @@ public class EntityChat {
 
     public EntityChat(EntityUser creatorUser, EntityUser invitedUser, String chatName, String message) throws ChatError {
         if (chatName == null || chatName.equals("noChatNaMe")) chatName = "Chat";
-
+        this.timeCreated = Time.valueOf(LocalTime.now());
         this.creatorEntity = creatorUser;
         usersList.add(invitedUser);
         this.chatName = chatName;
@@ -66,10 +68,10 @@ public class EntityChat {
     //Methods for working with this chat
     public ResponseMessage changeChatName(String chatName) throws ChatError {
         try {
-            this.chatName = chatName;
+            setChatName(chatName);
             return ResponseMessage.MODIFIED;
         } catch (Exception e) {
-            throw new ChatError("Failes to change chat name: " + e.getMessage());
+            throw new ChatError("Failed to change chat name: " + e.getMessage());
         }
     }
 
@@ -149,7 +151,7 @@ public class EntityChat {
         return chatName;
     }
 
-    public void setChatName(String chatName) {
+    private void setChatName(String chatName) {
         this.chatName = chatName;
     }
 
@@ -167,14 +169,6 @@ public class EntityChat {
 
     public void setUsersList(List<EntityUser> usersList) {
         this.usersList = usersList;
-    }
-
-    public List<EntityMessage> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(List<EntityMessage> messages) {
-        this.messages = messages;
     }
 
     public boolean isDemocracy() {
