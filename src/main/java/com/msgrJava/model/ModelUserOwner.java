@@ -2,35 +2,44 @@ package com.msgrJava.model;
 
 import com.msgrJava.entities.EntityUser;
 
-public class ModelUser {
+public class ModelUserOwner {
 
     private Long id;
     private String userTag;
     private String userName;
     private String userSurname;
     private String userPhone;
+    private String email;
 
-    public static ModelUser toModel(EntityUser userEntity) {
-        System.out.println("    ====ModelUser class: userEntity " + userEntity.toString() + " with userEntity id " +
-                userEntity.getId());
-        ModelUser userModel = new ModelUser();
-        userModel.setId(userEntity.getId());
-        userModel.setUserTag(userEntity.getUserTAG());
-        userModel.setUserName(userEntity.getName());
-        userModel.setUserSurname(userEntity.getSurname());
-        userModel.setUserPhone(userEntity.getPhoneNumber());
-        userModel.setUserPhone(userEntity.getPhoneNumber());
-        return userModel;
+
+
+    public static ModelUserOwner toModelOwner(EntityUser userEntity) {
+        System.out.println("    ====ModelUserOwner class: userEntityOwner " + userEntity.toString() +
+                " with userEntity id " + userEntity.getId());
+        ModelUserOwner userModelOwner = new ModelUserOwner();
+        userModelOwner.setId(userEntity.getId());
+        userModelOwner.setUserTag(userEntity.getUserTAG());
+        userModelOwner.setUserName(userEntity.getName());
+        userModelOwner.setUserSurname(userEntity.getSurname());
+        userModelOwner.setUserPhone(userEntity.getPhoneNumber());
+        userModelOwner.setEmail(userEntity.getEmail());
+        return userModelOwner;
     }
 
     public void printInfo() {
-        System.out.println("ModelUser{" +
+        System.out.println("ModelUserOwner{" +
                 "id=" + id +
                 ", userTag='" + userTag + '\'' +
                 ", userName='" + userName + '\'' +
                 ", userSurname='" + userSurname + '\'' +
                 ", userPhone='" + userPhone + '\'' +
-                '}');
+                ", email='" + email + '\'' +
+                '}'
+        );
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public Long getId() {
@@ -73,3 +82,4 @@ public class ModelUser {
         this.userPhone = userPhone;
     }
 }
+

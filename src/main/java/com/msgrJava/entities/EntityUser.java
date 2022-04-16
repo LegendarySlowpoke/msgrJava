@@ -1,5 +1,7 @@
 package com.msgrJava.entities;
 
+import com.msgrJava.crypt.PassHasher;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -25,6 +27,7 @@ public class EntityUser {
     private String email;
     //SecuredInfo
     private String passHash;
+    private String deviceIdHash;
     //todo this part should be implemented with ManyToMany annotation
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "usersList")
     @Column(name="userChats", nullable = true)
@@ -32,16 +35,36 @@ public class EntityUser {
 
     //----------------------------------
 
-    //Constructor
+    //Constructors
     public EntityUser() {
     }
+
+
+    //Methods
 
     //GetInfoPreInit
     public String getInfoPreInit() {
         return "id " + id + ", userTAG " + userTAG + ", phonenumber " + phoneNumber + ", name " + name + ", surname " +
-                surname + ", email " + email + ", passHash " + passHash;
+                surname + ", email " + email + ", passHash " + passHash + ", deviceIdHash " + deviceIdHash;
     }
 
+    public boolean passIsOk(String pass) {
+        if (passHash.equals(pass)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean deviceIdIsOk(String receivedDeviceIdHash) {
+        if (deviceIdHash.equals(receivedDeviceIdHash)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //Setters and getters
     public Long getId() {
         return id;
     }
@@ -98,6 +121,12 @@ public class EntityUser {
         this.passHash = passHash;
     }
 
+    public String getDeviceIdHash() {return deviceIdHash;}
+
+    public void setDeviceIdHash(String deviceIdHash) {
+        this.deviceIdHash = deviceIdHash;
+    }
+
     public List<EntityChat> getUserChats() {
         return userChats;
     }
@@ -105,4 +134,5 @@ public class EntityUser {
     public void setUserChats(List<EntityChat> userChats) {
         this.userChats = userChats;
     }
+
 }

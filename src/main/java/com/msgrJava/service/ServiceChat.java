@@ -1,15 +1,19 @@
 package com.msgrJava.service;
 
 import com.msgrJava.entities.EntityChat;
+import com.msgrJava.entities.EntityMessage;
 import com.msgrJava.entities.EntityUser;
 import com.msgrJava.exceptions.chatException.ChatError;
 import com.msgrJava.exceptions.chatException.MessageError;
-import com.msgrJava.exceptions.userExceptions.UserNotFoundException;
+import com.msgrJava.exceptions.userExceptions.UserNotFoundError;
+import com.msgrJava.model.ModelMessage;
 import com.msgrJava.repository.RepoChat;
 import com.msgrJava.repository.RepoMessage;
 import com.msgrJava.repository.RepoUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.LinkedList;
 
 @Service
 public class ServiceChat {
@@ -20,6 +24,37 @@ public class ServiceChat {
     private RepoUser userRepo;
     @Autowired
     private RepoMessage messageRepo;
+
+    //Methods for getting messages
+    //Method for getting all messages
+    public LinkedList<ModelMessage> getAllMessages(Long idUser, Long idChat) throws UserNotFoundError, ChatError,
+            MessageError {
+        //Creating local vars to check and use
+        EntityUser user = userRepo.getUserEntityById(idUser);
+        EntityChat chat = chatRepo.getEntityChatById(idChat);
+        checkAccessAndExistence(user, chat);
+        //Creating LinkedList<ModelMessage> to fill and return it
+        LinkedList<ModelMessage> messageList = new LinkedList<>();
+            for (EntityMessage message : chat.getAllMessages()) {
+                messageList.add(ModelMessage.toModelMessage(message));
+            }
+            return messageList;
+    }
+
+    //Method for getting unread messages
+    public LinkedList<ModelMessage> getUnreadMessages(Long idUser, Long idChat, Long idLastMessage) throws ChatError,
+            UserNotFoundError, MessageError {
+        //Creating local vars to check and use
+        EntityUser user = userRepo.getUserEntityById(idUser);
+        EntityChat chat = chatRepo.getEntityChatById(idChat);
+        checkAccessAndExistence(user, chat);
+        //Creating LinkedList<ModelMessage> to fill and return it
+        LinkedList<ModelMessage> messageList = new LinkedList<>();
+        for (EntityMessage message : chat.getUnreadMessages(idLastMessage)) {
+            messageList.add(ModelMessage.toModelMessage(message));
+        }
+        return messageList;
+    }
 
     //Methods for working with chat
     public EntityChat createNewChat(Long idCreator, Long idInvited, String chatName, String message) throws ChatError {
@@ -83,14 +118,14 @@ public class ServiceChat {
     }
 
     //method for adding user to chat
-    public String addUser(long chatId, long senderId, long invitedId) throws ChatError, UserNotFoundException {
+    public String addUser(long chatId, long senderId, long invitedId) throws ChatError, UserNotFoundError {
         EntityChat chatToEdit = chatRepo.getEntityChatById(chatId);
         EntityUser senderEntity = userRepo.getUserEntityById(senderId);
         EntityUser invitedEntity = userRepo.getUserEntityById(invitedId);
         if (chatToEdit == null) throw new ChatError("Chat with id " + chatId + " wasn't found.");
-        if (senderEntity == null) throw new UserNotFoundException("User(sender) with id " +
+        if (senderEntity == null) throw new UserNotFoundError("User(sender) with id " +
                 senderId + " wasn't found.");
-        if (invitedEntity == null) throw new UserNotFoundException("User(invited) with id " +
+        if (invitedEntity == null) throw new UserNotFoundError("User(invited) with id " +
                 invitedId + " wasn't found.");
 
         try {
@@ -108,14 +143,14 @@ public class ServiceChat {
         }
     }
 
-    public String removeUser(long chatId, long senderId, long userToDelete) throws ChatError, UserNotFoundException {
+    public String removeUser(long chatId, long senderId, long userToDelete) throws ChatError, UserNotFoundError {
         EntityChat chatToEdit = chatRepo.getEntityChatById(chatId);
         EntityUser senderEntity = userRepo.getUserEntityById(senderId);
         EntityUser userToDeleteEntity = userRepo.getUserEntityById(userToDelete);
         if (chatToEdit == null) throw new ChatError("Chat with id " + chatId + " wasn't found.");
-        if (senderEntity == null) throw new UserNotFoundException("User(sender) with id " +
+        if (senderEntity == null) throw new UserNotFoundError("User(sender) with id " +
                 senderId + " wasn't found.");
-        if (userToDeleteEntity == null) throw new UserNotFoundException("User(to delete) with id " +
+        if (userToDeleteEntity == null) throw new UserNotFoundError("User(to delete) with id " +
                 userToDelete + " wasn't found.");
         try {
             //Checking if senderID == chats creatorId || if democracy == true
@@ -160,7 +195,7 @@ public class ServiceChat {
 
     //Methods for working with messages in this chat;
     public String createNewMessage(long chatId, long senderId, String message) throws ChatError, MessageError,
-            UserNotFoundException {
+            UserNotFoundError {
 
         EntityChat chatEntity = chatRepo.getEntityChatById(chatId);
         EntityUser senderEntity = userRepo.getUserEntityById(senderId);
@@ -186,6 +221,18 @@ public class ServiceChat {
             System.out.println("Unknown error: " + e.getMessage());
             //e.printStackTrace();
             throw new ChatError("Unknown error:");// + e.getMessage());
+        }
+    }
+
+    //====================================================================================
+    //====================================================================================
+    //Additional helper methods
+    private void checkAccessAndExistence(EntityUser user, EntityChat chat) throws UserNotFoundError, ChatError {
+        if (user == null) throw new UserNotFoundError("Your id wasn't found.");
+        if (chat == null) throw new ChatError("Unable to find requested chat.");
+        //todo check if idUser belongs to chatUsers otr to creatorEntity(check if it works like it should
+        if (user != chat.getCreatorEntity() && !chat.getUsersList().contains(user)) {
+            throw new ChatError("You don't have permission to read this chat");
         }
     }
 }

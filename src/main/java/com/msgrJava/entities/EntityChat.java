@@ -6,37 +6,38 @@ import com.msgrJava.exceptions.chatException.ChatError;
 import com.msgrJava.exceptions.chatException.MessageError;
 
 import javax.persistence.*;
-import java.sql.Time;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 @Entity
 @Table(name = "chat")
-public class  EntityChat {
+public class EntityChat {
 
-    //Chat info
+    //Chat id number
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     //Chat name
     @JoinColumn(name = "chatName")
     private String chatName;
-    private Time timeCreated;
 
-    //Creators info
+    //Creator id number
     @OneToOne
     @JoinColumn(name= "creatorEntity")
     private EntityUser creatorEntity;
+    @JoinColumn(name= "lastMessageId")
+    private Long lastMessageId;
     //List of all users in chat
     @ManyToMany
     @JoinColumn(name = "userList")
-    private List<EntityUser> usersList = new ArrayList<>();
+    private List<EntityUser> usersList = Collections.synchronizedList(new LinkedList<>());
 
     //List of all messages in chat
-    @OneToMany (mappedBy="chat")
-    private List<EntityMessage> messages;
+    @OneToMany
+    @JoinColumn(name="messages", nullable = false)
+    private List<EntityMessage> messages = Collections.synchronizedList(new LinkedList<>());
 
     //Grants administrative functions to all Users in chat
     @JoinColumn(name="democracy")
@@ -50,7 +51,7 @@ public class  EntityChat {
 
     public EntityChat(EntityUser creatorUser, EntityUser invitedUser, String chatName, String message) throws ChatError {
         if (chatName == null || chatName.equals("noChatNaMe")) chatName = "Chat";
-        this.timeCreated = Time.valueOf(LocalTime.now());
+
         this.creatorEntity = creatorUser;
         usersList.add(invitedUser);
         this.chatName = chatName;
@@ -58,7 +59,10 @@ public class  EntityChat {
         if (message == null || message.equals("firstMessageIsEmPtY")) {
             message = "User " + creatorUser.getUserTAG() + " invited you to chat!";
         }
-        createNewMessage(creatorUser, message);
+        //messages = new LinkedList<>();
+        EntityMessage messageEntity = createNewMessage(creatorUser, message);
+        lastMessageId = messageEntity.getId();
+        messages.add(messageEntity);
     }
 
 
@@ -68,10 +72,10 @@ public class  EntityChat {
     //Methods for working with this chat
     public ResponseMessage changeChatName(String chatName) throws ChatError {
         try {
-            setChatName(chatName);
+            this.chatName = chatName;
             return ResponseMessage.MODIFIED;
         } catch (Exception e) {
-            throw new ChatError("Failed to change chat name: " + e.getMessage());
+            throw new ChatError("Failes to change chat name: " + e.getMessage());
         }
     }
 
@@ -93,13 +97,39 @@ public class  EntityChat {
         }
     }
 
+    //====================================================================================
+    //====================================================================================
+    //Methods for getting Messages from chat
+    public List<EntityMessage> getAllMessages() throws ChatError {
+        return this.messages;
+    }
+
+    public LinkedList<EntityMessage> getUnreadMessages(Long lastReceivedMessageId) throws ChatError {
+        LinkedList<EntityMessage> unreadMessages = new LinkedList<>();
+        //check if there is no unread messages
+        if (!this.lastMessageId.equals(lastReceivedMessageId)) {
+            try {
+                for (int i = lastReceivedMessageId.intValue() + 1;
+                     i < (this.lastMessageId - lastReceivedMessageId); i++) {
+                    unreadMessages.add(messages.get(i));
+                }
+                return unreadMessages;
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new ChatError("Unhandled exception " + e.getMessage());
+            }
+        }
+        return unreadMessages;
+    }
 
     //====================================================================================
     //====================================================================================
     //Methods for working with messages in this chat
     public EntityMessage createNewMessage(EntityUser user, String message) throws ChatError {
         try {
-            return new EntityMessage(user, this, message);
+            EntityMessage messageEntity = new EntityMessage(user, this, message);
+            this.lastMessageId = messageEntity.getId();
+            return messageEntity;
         } catch (MessageError e ){
             throw new ChatError("Failed to create new message(EntityChat class): MessageError " + e.getMessage());
         } catch (Exception e) {
@@ -107,22 +137,7 @@ public class  EntityChat {
         }
     }
 
-    //todo finish this
-    public LinkedList<EntityMessage> getMessages(RequestMessage request) throws ChatError {
-            switch (request) {
-                case UNREADONLY:
-                    return new LinkedList<EntityMessage>();
-                case ALLMESSAGES:
-                    return new LinkedList<EntityMessage>();
-                case MODIFIEDMESSAGES:
-                    return new LinkedList<EntityMessage>();
-                default:
-                    throw new ChatError("Unexpected request during getMessage in Entity chat");
-            }
-    }
-
-
-    //todo finish this
+    //todo and this (finish)
     public ResponseMessage modifyMessage(EntityUser user, Long messageId , String corerectedMessage) throws ChatError {
         try {
             //messages.get(messageId);
@@ -151,7 +166,7 @@ public class  EntityChat {
         return chatName;
     }
 
-    private void setChatName(String chatName) {
+    public void setChatName(String chatName) {
         this.chatName = chatName;
     }
 
@@ -169,6 +184,10 @@ public class  EntityChat {
 
     public void setUsersList(List<EntityUser> usersList) {
         this.usersList = usersList;
+    }
+
+    public List<EntityMessage> getMessages() {
+        return messages;
     }
 
     public boolean isDemocracy() {

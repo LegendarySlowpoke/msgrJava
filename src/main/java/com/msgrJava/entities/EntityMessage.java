@@ -72,6 +72,9 @@ public class EntityMessage {
     //todo create get method for message with implementation of messageIsRead function;
 
     ResponseMessage modifyMessage(String message) throws MessageError {
+        if (this.isDeleted()) {
+            throw new MessageError("Cannot edit deleted message!");
+        }
         //Initialize history for message, if doesn't exist
         // if (history == null) history = new LinkedHashMap<>();
         Time modifyTime = Time.valueOf(LocalTime.now());
@@ -93,9 +96,27 @@ public class EntityMessage {
             message = "Message was deleted at " + deleteTime;
             timeDeleted = deleteTime;
             deleted = true;
+            modified = false;
+            timeModified = null;
             return ResponseMessage.DELETED;
         } catch (Exception e) {
             throw new MessageError("Failed to delete message with id " + id + ": " + e.getMessage());
         }
     }
+
+    //Getters
+
+    public Long getId() {return id;}
+
+    public String getMessage() {return message;}
+
+    public Time getCreated() {return created;}
+
+    public boolean isModified() {return modified;}
+
+    public Time getTimeModified() {return timeModified;}
+
+    public boolean isDeleted() {return deleted;}
+
+    public Time getTimeDeleted() {return timeDeleted;}
 }

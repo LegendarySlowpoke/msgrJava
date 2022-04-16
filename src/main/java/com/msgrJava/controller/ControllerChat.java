@@ -2,7 +2,7 @@ package com.msgrJava.controller;
 
 import com.msgrJava.exceptions.chatException.ChatError;
 import com.msgrJava.exceptions.chatException.MessageError;
-import com.msgrJava.exceptions.userExceptions.UserNotFoundException;
+import com.msgrJava.exceptions.userExceptions.UserNotFoundError;
 import com.msgrJava.service.ServiceChat;
 import com.msgrJava.service.ServiceMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +34,53 @@ public class ControllerChat {
     }
      */
 
+    //Methods for getting messages from chat
+    //Getting all messages from requested chat
+    @GetMapping("/getAllChatMessages")
+    public ResponseEntity getChatAllMessages(@RequestParam Long userId, Long chatId) {
+        try {
+            System.out.println("Request for getting all messages from chat with id '" + chatId +
+                    "' from user with id '" + userId + "'  received");
+            //You should return LinkedList<ModelMessage>!
+            return ResponseEntity.ok(chatService.getAllMessages(userId, chatId));
+        } catch (UserNotFoundError e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("User exception: " + e.getMessage());
+        } catch (ChatError e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Chat exception: " + e.getMessage());
+        } catch (MessageError e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Message exception: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Unhandled exception: " + e.getMessage());
+        }
+    }
+
+    //Checking if new messages were added. In case the were - send them back
+    @GetMapping("/getNewChatMessages")
+    public ResponseEntity getChatUnreadMessages(@RequestParam Long userId, Long chatId, Long lastReadMessageId) {
+        try {
+            System.out.println("Request for getting unread messages from chat with id '" + chatId +
+                    "' from user with id '" + userId + "'  received(last read message id is '" + lastReadMessageId
+                    + "'.");
+            //You should return LinkedList<ModelMessage>!
+            return ResponseEntity.ok(chatService.getUnreadMessages(userId, chatId, lastReadMessageId));
+        } catch (UserNotFoundError e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("User exception: " + e.getMessage());
+        } catch (ChatError e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Chat exception: " + e.getMessage());
+        } catch (MessageError e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Message exception: " + e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Unhandled exception: " + e.getMessage());
+        }
+    }
 
 
     //Methods for working with chat entity
@@ -66,8 +113,6 @@ public class ControllerChat {
         }
     }
 
-    //todo adding user method should be implemented one day...
-    // public ResponseEntity addUserToChat(@RequestParam long chatId, long userId) {}
 
     @PostMapping("/changeDemocracy")
     public ResponseEntity changeDemocracy(@RequestParam long chatId, long senderId) {
@@ -86,7 +131,7 @@ public class ControllerChat {
             System.out.println("Request for adding user " + invitedId + " to chat with id "
                     + chatId + " from user" + " with id " + senderId + " received");
             return ResponseEntity.ok(chatService.addUser(chatId, senderId, invitedId));
-        } catch (ChatError | UserNotFoundException e) {
+        } catch (ChatError | UserNotFoundError e) {
             return ResponseEntity.badRequest().body("Unable to add user: " + e.getMessage());
         }
     }
@@ -97,7 +142,7 @@ public class ControllerChat {
             System.out.println("Request for deleting user " + userToDeleteId + " from chat with id "
                     + chatId + " from user" + " with id " + senderId + " received");
             return ResponseEntity.ok(chatService.removeUser(chatId, senderId,userToDeleteId));
-        } catch (ChatError | UserNotFoundException e) {
+        } catch (ChatError | UserNotFoundError e) {
             return ResponseEntity.badRequest().body("Unable to delete user: " + e.getMessage());
         }
     }
@@ -113,9 +158,6 @@ public class ControllerChat {
             return ResponseEntity.badRequest().body("Unable to delete: " + e.getMessage());
         }
     }
-
-
-
 
     //===============================================================================================
     //===============================================================================================
@@ -134,7 +176,7 @@ public class ControllerChat {
         } catch (ChatError e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (UserNotFoundException e) {
+        } catch (UserNotFoundError e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
