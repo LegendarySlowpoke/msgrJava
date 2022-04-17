@@ -4,6 +4,8 @@ import com.msgrJava.ENUMS.RequestMessage;
 import com.msgrJava.ENUMS.ResponseMessage;
 import com.msgrJava.exceptions.chatException.ChatError;
 import com.msgrJava.exceptions.chatException.MessageError;
+import com.msgrJava.repository.RepoMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -20,27 +22,27 @@ public class EntityChat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     //Chat name
-    @JoinColumn(name = "chatName")
+    //@JoinColumn(name = "chatName")
     private String chatName;
 
     //Creator id number
     @OneToOne
-    @JoinColumn(name= "creatorEntity")
+    //@JoinColumn(name= "creatorEntity")
     private EntityUser creatorEntity;
-    @JoinColumn(name= "lastMessageId")
+    //@JoinColumn(name= "lastMessageId")
     private Long lastMessageId;
     //List of all users in chat
     @ManyToMany
-    @JoinColumn(name = "userList")
+    //@JoinColumn(name = "userList")
     private List<EntityUser> usersList = Collections.synchronizedList(new LinkedList<>());
 
     //List of all messages in chat
     @OneToMany
-    @JoinColumn(name="messages", nullable = false)
+    //@JoinColumn(name="messages", nullable = false)
     private List<EntityMessage> messages = Collections.synchronizedList(new LinkedList<>());
 
     //Grants administrative functions to all Users in chat
-    @JoinColumn(name="democracy")
+    //@JoinColumn(name="democracy")
     boolean democracy;
 
 
@@ -49,13 +51,15 @@ public class EntityChat {
     //Constructors
     public EntityChat() {}
 
-    public EntityChat(EntityUser creatorUser, EntityUser invitedUser, String chatName, String message) throws ChatError {
+    /*
+    public EntityChat(EntityUser creatorUser, EntityUser invitedUser, String message, String chatName) throws ChatError {
         if (chatName == null || chatName.equals("noChatNaMe")) chatName = "Chat";
 
         this.creatorEntity = creatorUser;
         usersList.add(invitedUser);
+        this.lastMessageId = 0L;
         this.chatName = chatName;
-
+        //todo remove this
         if (message == null || message.equals("firstMessageIsEmPtY")) {
             message = "User " + creatorUser.getUserTAG() + " invited you to chat!";
         }
@@ -63,6 +67,16 @@ public class EntityChat {
         EntityMessage messageEntity = createNewMessage(creatorUser, message);
         lastMessageId = messageEntity.getId();
         messages.add(messageEntity);
+    }
+     */
+    public EntityChat(EntityUser creatorUser, EntityUser invitedUser, String chatName) throws ChatError {
+        if (chatName == null || chatName.equals("noChatNaMe")) chatName = "Chat";
+
+        this.creatorEntity = creatorUser;
+        usersList.add(invitedUser);
+        this.lastMessageId = 0L;
+        this.chatName = chatName;
+
     }
 
 
@@ -127,8 +141,8 @@ public class EntityChat {
     //Methods for working with messages in this chat
     public EntityMessage createNewMessage(EntityUser user, String message) throws ChatError {
         try {
-            EntityMessage messageEntity = new EntityMessage(user, this, message);
-            this.lastMessageId = messageEntity.getId();
+            EntityMessage messageEntity = new EntityMessage(user, this, message, (lastMessageId + 1));
+            this.lastMessageId = messageEntity.getChatPositionId();
             return messageEntity;
         } catch (MessageError e ){
             throw new ChatError("Failed to create new message(EntityChat class): MessageError " + e.getMessage());
@@ -196,5 +210,17 @@ public class EntityChat {
 
     public void setDemocracy(boolean democracy) {
         this.democracy = democracy;
+    }
+
+    public String toStringFull() {
+        return "EntityChat{" +
+                "id=" + id +
+                ", chatName='" + chatName + '\'' +
+                ", creatorEntity=" + creatorEntity +
+                ", lastMessageId=" + lastMessageId +
+                ", usersList=" + usersList +
+                ", messages=" + messages +
+                ", democracy=" + democracy +
+                '}';
     }
 }

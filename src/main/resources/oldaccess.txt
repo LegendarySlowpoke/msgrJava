@@ -1,0 +1,2 @@
+spring.datasource.username=admon
+spring.datasource.password=adminadmon

@@ -17,11 +17,15 @@ public class EntityMessage {
     @OneToOne
     @JoinColumn(name = "sender_id")
     private EntityUser sender;
+    /*
     @ManyToOne
     @JoinColumn(name = "chat_id")
     private EntityChat chat;
+     */
     @JoinColumn(name = "message_content")
     private String message;
+    @JoinColumn(name = "chat_position_id")
+    private Long chatPositionId;
     @JoinColumn(name = "time_created")
     private Time created;
     @JoinColumn(name = "is_modified")
@@ -41,12 +45,13 @@ public class EntityMessage {
     public EntityMessage() {}
 
     //todo check if constructor is done properly
-    public EntityMessage(EntityUser sender, EntityChat chatEntity, String message) throws MessageError {
+    public EntityMessage(EntityUser sender, EntityChat chatEntity, String message, Long chatPositionId) throws MessageError {
         try {
             this.sender = sender;
-            this.chat = chatEntity;
+            //this.chat = chatEntity;
             this.message = message;
             created = Time.valueOf(LocalTime.now());
+            this.chatPositionId = chatPositionId;
         } catch (Exception e) {
             throw new MessageError("Failed to create new message(Message class - constructor): "
                     + e.getMessage());
@@ -65,9 +70,11 @@ public class EntityMessage {
         return sender;
     }
 
+    /*
     public EntityChat getChat() {
         return chat;
     }
+     */
 
     //todo create get method for message with implementation of messageIsRead function;
 
@@ -119,4 +126,23 @@ public class EntityMessage {
     public boolean isDeleted() {return deleted;}
 
     public Time getTimeDeleted() {return timeDeleted;}
+
+    public Long getChatPositionId() {return chatPositionId;}
+
+    public void setChatPositionId(Long chatPositionId) {this.chatPositionId = chatPositionId;}
+
+    public String toStringFull() {
+        return "EntityMessage{" +
+                "id=" + id +
+                ", sender=" + sender +
+               // ", chat=" + chat +
+                ", message='" + message + '\'' +
+                ", chatPositionId=" + chatPositionId +
+                ", created=" + created +
+                ", modified=" + modified +
+                ", timeModified=" + timeModified +
+                ", deleted=" + deleted +
+                ", timeDeleted=" + timeDeleted +
+                '}';
+    }
 }

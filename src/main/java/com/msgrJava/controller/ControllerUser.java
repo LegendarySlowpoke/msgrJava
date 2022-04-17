@@ -127,7 +127,7 @@ public class ControllerUser {
                 }
         }
 
-        @GetMapping("/findbyphonenumber")
+        @GetMapping("/findByPhoneNumber")
         public ResponseEntity getByPhoneNumber(@RequestParam String phone) {
                 try {
                         System.out.println("Request for User with phone " + phone + " received");

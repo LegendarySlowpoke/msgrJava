@@ -57,7 +57,7 @@ public class ServiceChat {
     }
 
     //Methods for working with chat
-    public EntityChat createNewChat(Long idCreator, Long idInvited, String chatName, String message) throws ChatError {
+    public EntityChat createNewChat(Long idCreator, Long idInvited, String chatName, String messageReceived) throws ChatError, MessageError {
         //Checking if incoming data is ok
         if (idCreator == null || idInvited == null) {
             throw new ChatError("Users id number wasn't provided!");
@@ -67,8 +67,17 @@ public class ServiceChat {
         EntityUser invitedUser = userRepo.getUserEntityById(idInvited);
         if (creatorUser == null) throw new ChatError("Unable to find creator entity!");
         if (invitedUser == null) throw new ChatError("Unable to find invited users entity!");
-
-        return chatRepo.save(new EntityChat(creatorUser, invitedUser, chatName, message));
+        /*
+        //Checking messageReceived
+        if (messageReceived == null || messageReceived.equals("firstMessageIsEmPtY")) {
+            messageReceived = "User " + creatorUser.getUserTAG() + " invited you to chat!";
+        }
+         */
+        //Creating chatEntity & first chatMessage
+        //EntityChat newChatEntity = new EntityChat(creatorUser, invitedUser, chatName, messageReceived);
+        EntityChat newChatEntity = new EntityChat(creatorUser, invitedUser, chatName);
+        messageRepo.save(newChatEntity.createNewMessage(creatorUser, messageReceived));
+        return chatRepo.save(newChatEntity);
     }
 
     public String changeChatName(Long chatId, Long senderId, String chatName) throws ChatError {
@@ -209,8 +218,10 @@ public class ServiceChat {
 
         //Create and save messageEntity to repository
         try {
-
-            messageRepo.save(chatEntity.createNewMessage(senderEntity, message));
+            System.out.println(messageRepo.getEntityMessageById(5));
+            EntityMessage entityMessage = chatEntity.createNewMessage(senderEntity, message);
+            System.out.println(entityMessage.toStringFull());
+            messageRepo.save(entityMessage);
             System.out.println("Saved to message repo");
 
             //Saving change made in chatEntity
@@ -219,8 +230,8 @@ public class ServiceChat {
             return "Message was posted!";
         } catch (Exception e) {
             System.out.println("Unknown error: " + e.getMessage());
-            //e.printStackTrace();
-            throw new ChatError("Unknown error:");// + e.getMessage());
+            e.printStackTrace();
+            throw new ChatError("Unknown error.");// + e.getMessage());
         }
     }
 

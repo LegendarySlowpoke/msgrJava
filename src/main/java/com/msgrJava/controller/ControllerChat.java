@@ -93,10 +93,7 @@ public class ControllerChat {
             chatService.createNewChat(creatorId, invitedId, chatName, message);
             System.out.println("Chat created!");
             return ResponseEntity.ok("Chat created!");
-        } catch (ChatError e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (Exception e) {
+        } catch (ChatError | MessageError | Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
