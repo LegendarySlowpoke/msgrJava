@@ -10,6 +10,7 @@ import com.msgrJava.exceptions.userExceptions.UserAlreadyExistsError;
 import com.msgrJava.model.ModelChat;
 import com.msgrJava.model.ModelUser;
 import com.msgrJava.model.ModelUserOwner;
+import com.msgrJava.repository.RepoChat;
 import com.msgrJava.repository.RepoUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,8 @@ public class ServiceUser {
 
     @Autowired
     private RepoUser userRepo;
+    @Autowired
+    private RepoChat chatRepo;
 
     public ModelUserOwner logIn(String userTag, String userPass, String deviceIdHash) throws UserNotFoundError, UserLogInError {
         EntityUser user = userRepo.findByUserTAG(userTag);
@@ -101,22 +104,48 @@ public class ServiceUser {
         }
         return userRepo.save(user);
     }
+
+
+    //TODO change it!
     //Getting entities (ONLY FOR USING IN SERVER PART)
-    public List<ModelChat> getOwnerChatList(Long id) throws UserNotFoundError, ChatError {
-            EntityUser user = userRepo.getUserEntityById(id);
-            if (user == null) {
-                System.out.println("ServiceUser(getOwnerChatList()): id=" + id + " not found");
-                throw new UserNotFoundError("User not found");
-            } else {
-                    List<ModelChat> chatList = new ArrayList<>();
-                    for (EntityChat userChat : user.getUserChats()) {
-                        if (userChat == null) {
-                            throw new ChatError("Unable to load chat");
-                        }
-                        chatList.add(ModelChat.toModelChat(userChat));
-                    }
-                    return chatList;
+    //public List<ModelChat> getOwnerChatList(Long id, String idDeviceHash) throws UserNotFoundError, ChatError,
+    public List<ModelChat> getOwnerChatList(Long id, String idDeviceHash) throws UserNotFoundError, ChatError,
+            UserLogInError {
+        //todo DELETE THIS STRING DEBUG ONLY System.out.println("\t\tServiceUser: getOwnerChatList(): id:" + id + ", idDeviceHash:" + idDeviceHash);
+        EntityUser user = userRepo.getUserEntityById(id);
+        if (user == null) {
+            System.out.println("ServiceUser(getOwnerChatList()): id=" + id + " not found");
+            throw new UserNotFoundError("User not found");
+        } else {
+            if (!user.getDeviceIdHash().equals(idDeviceHash)) {
+                throw new UserLogInError("Please, login again!");
             }
+            List<ModelChat> chatList = new ArrayList<>();
+            if (user.getUserChats() != null) {
+                for (EntityChat userChat : user.getUserChats()) {
+                    if (userChat == null) {
+                        throw new ChatError("Unable to load chat");
+                    }
+                    chatList.add(ModelChat.toModelChat(userChat));
+                }
+            }
+            //Initialize list, searching chats where user is creator
+            List<EntityChat> chatEntityList = chatRepo.findByCreatorEntity(user);
+
+            //Searching & adding chats where user is invited
+            chatEntityList.addAll(chatRepo.findByInvitedUser(user));
+
+            List<ModelChat> modelChatList = ModelChat.toModelChatList(chatEntityList);
+
+            //todo Checking models, should be deleted after checking
+            System.out.println("\t\t\tchatEntityList info: size=" + chatEntityList.size());
+            for (ModelChat modelChat : modelChatList) {
+                System.out.println("\t\t\t\t" + modelChat.toString());
+            }
+
+            return modelChatList;
+            //return ModelChat.toModelChatList(chatEntityList);
+        }
     }
 
     //Getting models

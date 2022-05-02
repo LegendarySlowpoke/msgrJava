@@ -9,6 +9,7 @@ import java.sql.Time;
 
 public class ModelMessage {
 
+    private Long messageId;
     private Long sender;
     private String message;
     private Time created;
@@ -17,6 +18,7 @@ public class ModelMessage {
 
     public static ModelMessage toModelMessage(EntityMessage entityMessage) {
         ModelMessage model = new ModelMessage();
+        model.messageId = entityMessage.getId();
         model.sender = entityMessage.getSender().getId();
         model.message = entityMessage.getMessage();
         model.created = entityMessage.getCreated();

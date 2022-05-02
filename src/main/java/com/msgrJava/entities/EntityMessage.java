@@ -14,14 +14,11 @@ public class EntityMessage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @ManyToOne
+    private EntityChat chat;
     @OneToOne
     @JoinColumn(name = "sender_id")
     private EntityUser sender;
-    /*
-    @ManyToOne
-    @JoinColumn(name = "chat_id")
-    private EntityChat chat;
-     */
     @JoinColumn(name = "message_content")
     private String message;
     @JoinColumn(name = "chat_position_id")
@@ -48,7 +45,7 @@ public class EntityMessage {
     public EntityMessage(EntityUser sender, EntityChat chatEntity, String message, Long chatPositionId) throws MessageError {
         try {
             this.sender = sender;
-            //this.chat = chatEntity;
+            this.chat = chatEntity;
             this.message = message;
             created = Time.valueOf(LocalTime.now());
             this.chatPositionId = chatPositionId;

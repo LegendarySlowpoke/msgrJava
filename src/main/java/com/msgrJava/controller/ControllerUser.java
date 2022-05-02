@@ -31,7 +31,7 @@ public class ControllerUser {
                 try {
                         newUser.setPassHash(PassHasher.encryptThisString(newUser.getPassHash()));
                         System.out.println("User registration request received: " + newUser.toString() +
-                                "\n\t\t" + newUser.getInfoPreInit());
+                                "\n\t\t" + newUser.getInfoString());
                         userService.registration(newUser);
                         System.out.println("Successful registration!\nUser: "
                                 + userService.getByUserTAG(newUser.getUserTAG()).toString() + "\n");
@@ -53,7 +53,7 @@ public class ControllerUser {
         public ResponseEntity userLogIn(@RequestParam String userTag, String pass, String deviceIdHash) {
                 try {
                         System.out.println("Request for login User with tag " + userTag + " received" +
-                                "\n\t\t\tpassHash: " + pass);
+                                "\n\t\t\tpassHash: " + pass + ", deviceIdHash: " + deviceIdHash);
                         //todo change next 3 lines into 1
                         ModelUserOwner owner = userService.logIn(userTag, PassHasher.encryptThisString(pass),
                                 deviceIdHash);
@@ -99,16 +99,20 @@ public class ControllerUser {
 
         //Getting chat list for ModelOwner
         @GetMapping("/getChatList")
-        public ResponseEntity getChatList(@RequestParam Long id) {
+        public ResponseEntity getChatList(@RequestParam Long userId, String idDeviceHash) {
                 try {
+                        System.out.println(userService.getOwnerChatList(userId, idDeviceHash));
                         System.out.println("Request for getting chatList for modelOwner received");
-                        return ResponseEntity.ok(userService.getOwnerChatList(id));
+                        return ResponseEntity.ok(userService.getOwnerChatList(userId, idDeviceHash));
                 } catch (ChatError e){
                         e.printStackTrace();
                         return ResponseEntity.badRequest().body("Chat error: " + e.getMessage());
                 } catch (UserNotFoundError e) {
                         e.printStackTrace();
                         return ResponseEntity.badRequest().body("User not found: " + e.getMessage());
+                } catch (UserLogInError e) {
+                        e.printStackTrace();
+                        return ResponseEntity.badRequest().body(e.getMessage());
                 }
         }
 

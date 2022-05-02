@@ -18,26 +18,10 @@ public class ControllerChat {
     private ServiceMessage messageService;
 
 
-    //TODO REMOVE THIS METHOD. TESTING PURPOSE ONLY
-    /*
-    @PostMapping("/testMessage")
-    public ResponseEntity testMessage() {
-        System.out.println("TEST MESSAGE request received. Trying to create message in chat #3" +
-                " from user #5. Message content is \"TEST MeSsAgE O_O o_o -_-\"");
-        try {
-            messageService.createNewMessage(5L, 3L, "TEST MeSsAgE O_O o_o -_-");
-            return ResponseEntity.ok("Created, check the db.");
-        } catch (MessageError e) {
-            System.out.println("Unable");
-            return ResponseEntity.badRequest().body("Unable");
-        }
-    }
-     */
-
     //Methods for getting messages from chat
     //Getting all messages from requested chat
     @GetMapping("/getAllChatMessages")
-    public ResponseEntity getChatAllMessages(@RequestParam Long userId, Long chatId) {
+    public ResponseEntity getAllChatMessages(@RequestParam Long userId, Long chatId) {
         try {
             System.out.println("Request for getting all messages from chat with id '" + chatId +
                     "' from user with id '" + userId + "'  received");
@@ -58,6 +42,7 @@ public class ControllerChat {
         }
     }
 
+    /*
     //Checking if new messages were added. In case the were - send them back
     @GetMapping("/getNewChatMessages")
     public ResponseEntity getChatUnreadMessages(@RequestParam Long userId, Long chatId, Long lastReadMessageId) {
@@ -81,6 +66,7 @@ public class ControllerChat {
             return ResponseEntity.badRequest().body("Unhandled exception: " + e.getMessage());
         }
     }
+     */
 
 
     //Methods for working with chat entity
@@ -119,28 +105,6 @@ public class ControllerChat {
             return ResponseEntity.ok(chatService.changeDemocracy(chatId, senderId));
         } catch (ChatError e) {
             return ResponseEntity.badRequest().body("Unable to change chat democracy: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("addUser")
-    public ResponseEntity addUser(@RequestParam long chatId, long senderId, long invitedId) {
-        try {
-            System.out.println("Request for adding user " + invitedId + " to chat with id "
-                    + chatId + " from user" + " with id " + senderId + " received");
-            return ResponseEntity.ok(chatService.addUser(chatId, senderId, invitedId));
-        } catch (ChatError | UserNotFoundError e) {
-            return ResponseEntity.badRequest().body("Unable to add user: " + e.getMessage());
-        }
-    }
-
-    @PostMapping("/removeUser")
-    public ResponseEntity removeUser(@RequestParam Long chatId, Long senderId, Long userToDeleteId) {
-        try {
-            System.out.println("Request for deleting user " + userToDeleteId + " from chat with id "
-                    + chatId + " from user" + " with id " + senderId + " received");
-            return ResponseEntity.ok(chatService.removeUser(chatId, senderId,userToDeleteId));
-        } catch (ChatError | UserNotFoundError e) {
-            return ResponseEntity.badRequest().body("Unable to delete user: " + e.getMessage());
         }
     }
 

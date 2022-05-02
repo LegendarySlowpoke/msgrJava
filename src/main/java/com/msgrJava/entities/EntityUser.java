@@ -1,8 +1,10 @@
 package com.msgrJava.entities;
 
 import com.msgrJava.crypt.PassHasher;
+import com.msgrJava.exceptions.chatException.ChatError;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,23 +31,27 @@ public class EntityUser {
     private String passHash;
     private String deviceIdHash;
     //todo this part should be implemented with ManyToMany annotation
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "usersList")
-    @Column(name="userChats", nullable = true)
-    private List<EntityChat> userChats;
+    @OneToMany(mappedBy = "id")
+    @Column(name="userChats", nullable = false)
+    private static List<EntityChat> userChats;
 
     //----------------------------------
 
     //Constructors
     public EntityUser() {
+        userChats = new ArrayList<>();
     }
 
 
     //Methods
 
     //GetInfoPreInit
-    public String getInfoPreInit() {
+    public String getInfoString() {
+
+
         return "id " + id + ", userTAG " + userTAG + ", phonenumber " + phoneNumber + ", name " + name + ", surname " +
-                surname + ", email " + email + ", passHash " + passHash + ", deviceIdHash " + deviceIdHash;
+                surname + ", email " + email + ", passHash " + passHash + ", deviceIdHash " + deviceIdHash +
+                ", userChats " + userChats;
     }
 
     public boolean passIsOk(String pass) {
@@ -61,6 +67,22 @@ public class EntityUser {
             return true;
         } else {
             return false;
+        }
+    }
+
+    public void addChat(EntityChat newChat) throws ChatError {
+        if (!userChats.contains(newChat)) {
+            userChats.add(newChat);
+        } else {
+            throw new ChatError("You are already added to this chat");
+        }
+    }
+
+    public void removeChat(EntityChat chatToRemove) throws ChatError {
+        if (userChats.contains(chatToRemove)) {
+            userChats.remove(chatToRemove);
+        } else {
+            throw new ChatError("You've exited this chat already");
         }
     }
 

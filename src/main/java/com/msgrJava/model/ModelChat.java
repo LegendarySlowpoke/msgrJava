@@ -2,28 +2,88 @@ package com.msgrJava.model;
 
 
 import com.msgrJava.entities.EntityChat;
-import com.msgrJava.entities.EntityMessage;
-import com.msgrJava.entities.EntityUser;
+
+import java.util.ArrayList;
 import java.util.List;
 
+
+//@JsonSerialize
 public class ModelChat {
 
     private Long id;
     private String chatName;
-    private EntityUser creatorEntity;
-    private List<EntityUser> usersList;
+    private ModelUser creatorModel;
+    private ModelUser invitedModel;
 
-    private List<EntityMessage> messages;
     boolean democracy;
 
     public static ModelChat toModelChat(EntityChat userChat) {
         ModelChat chat = new ModelChat();
-        chat.id = userChat.getId();
-        chat.chatName = userChat.getChatName();
-        chat.creatorEntity = userChat.getCreatorEntity();
-        chat.usersList = userChat.getUsersList();
-        chat.messages = userChat.getMessages();
-        chat.democracy = userChat.isDemocracy();
+        chat.setId(userChat.getId());
+        chat.setChatName(userChat.getChatName());
+        chat.setCreatorModel(ModelUser.toModel(userChat.getCreatorEntity()));
+        chat.setInvitedModel(ModelUser.toModel(userChat.getInvitedUser()));
+        chat.setDemocracy(userChat.isDemocracy());
         return chat;
+    }
+
+    public static List<ModelChat> toModelChatList(List<EntityChat> entityChatList) {
+        List<ModelChat> result = new ArrayList<>();
+        for (EntityChat entityChat : entityChatList) {
+            result.add(toModelChat(entityChat));
+        }
+
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ModelChat{" +
+                "id=" + id +
+                ", chatName='" + chatName + '\'' +
+                ", creatorModel=" + creatorModel.infoString() +
+                ", invitedModel=" + invitedModel.infoString() +
+                ", democracy=" + democracy +
+                '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getChatName() {
+        return chatName;
+    }
+
+    public void setChatName(String chatName) {
+        this.chatName = chatName;
+    }
+
+    public ModelUser getCreatorModel() {
+        return creatorModel;
+    }
+
+    public void setCreatorModel(ModelUser creatorModel) {
+        this.creatorModel = creatorModel;
+    }
+
+    public ModelUser getInvitedModel() {
+        return invitedModel;
+    }
+
+    public void setInvitedModel(ModelUser invitedModel) {
+        this.invitedModel = invitedModel;
+    }
+
+    public boolean isDemocracy() {
+        return democracy;
+    }
+
+    public void setDemocracy(boolean democracy) {
+        this.democracy = democracy;
     }
 }

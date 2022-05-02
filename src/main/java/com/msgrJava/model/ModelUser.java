@@ -33,6 +33,16 @@ public class ModelUser {
                 '}');
     }
 
+    public String infoString() {
+        return "ModelUser{" +
+                "id=" + id +
+                ", userTag='" + userTag + '\'' +
+                ", userName='" + userName + '\'' +
+                ", userSurname='" + userSurname + '\'' +
+                ", userPhone='" + userPhone + '\'' +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }
