@@ -5,7 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 
-//This code is honestly find in internet
+//This code is honestly found in internet
 
 public class PassHasher {
         public static String encryptThisString(String input)
